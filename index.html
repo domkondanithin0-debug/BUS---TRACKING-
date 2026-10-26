@@ -1,0 +1,639 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Transport Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tracking-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .location-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .location-details p {
+            margin: 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f3f7fb;
+            overflow-wrap: anywhere;
+        }
+        .map-container {
+            width: 100%;
+            min-height: 320px;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid #dce5ef;
+        }
+        .map-container iframe {
+            display: block;
+            width: 100%;
+            height: 380px;
+            border: 0;
+        }
+        .tracking-note {
+            margin-top: 14px;
+            color: #5b6675;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Page -->
+    <section id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="logo">🚌</div>
+            <h1>CampusRide</h1>
+            <p class="subtitle">College Transport Management System</p>
+
+            <form id="loginForm">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" required="">
+
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required="">
+
+                <label for="loginRole">Login as</label>
+                <select id="loginRole">
+                    <option value="Admin">Administrator</option>
+                    <option value="Student">Student</option>
+                    <option value="Driver">Driver</option>
+                </select>
+
+                <button type="submit" class="primary-btn">Login</button>
+                <p id="loginMessage" class="message"></p>
+            </form>
+
+            <p class="demo-info">
+                Demo Admin: admin@college.com<br>
+                Password: admin123
+            </p>
+
+            <p class="register-text">
+                New student?
+                <button type="button" class="text-btn" onclick="showRegister()">Register here</button>
+            </p>
+        </div>
+    </section>
+
+    <!-- Registration Page -->
+    <section id="registerPage" class="login-page hidden">
+        <div class="login-card">
+            <div class="logo">🎓</div>
+            <h1>Student Registration</h1>
+            <p class="subtitle">Create your transport account</p>
+
+            <form id="registerForm">
+                <label for="studentName">Full Name</label>
+                <input type="text" id="studentName" placeholder="Enter full name" required="">
+
+                <label for="studentEmail">Email</label>
+                <input type="email" id="studentEmail" placeholder="Enter email" required="">
+
+                <label for="studentId">Student ID</label>
+                <input type="text" id="studentId" placeholder="Enter student ID" required="">
+
+                <label for="studentRoute">Select Route</label>
+                <select id="studentRoute" required="">
+                    <option value="">Select a route</option>
+                    <option value="Route 1">Route 1 - City Center</option>
+                    <option value="Route 2">Route 2 - Railway Station</option>
+                    <option value="Route 3">Route 3 - Main Junction</option>
+                </select>
+
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Create password" minlength="6" required="">
+
+                <button type="submit" class="primary-btn">Register</button>
+                <p id="registerMessage" class="message"></p>
+            </form>
+
+            <p class="register-text">
+                Already registered?
+                <button type="button" class="text-btn" onclick="showLogin()">Login</button>
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Application -->
+    <div id="appPage" class="app hidden">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <span>🚌</span>
+                <div>
+                    <h2>CampusRide</h2>
+                    <small>Transport Portal</small>
+                </div>
+            </div>
+
+            <div class="user-info">
+                <div class="avatar">👤</div>
+                <div>
+                    <strong id="userName">Administrator</strong>
+                    <small id="userRole">Admin</small>
+                </div>
+            </div>
+
+            <nav class="navigation">
+                <button class="nav-btn active" data-section="dashboard">
+                    🏠 Dashboard
+                </button>
+                <button class="nav-btn" data-section="buses">
+                    🚌 Bus Management
+                </button>
+                <button class="nav-btn" data-section="routes">
+                    🛣️ Route Management
+                </button>
+                <button class="nav-btn" data-section="students">
+                    🎓 Students
+                </button>
+                <button class="nav-btn" data-section="drivers">
+                    👨‍✈️ Drivers
+                </button>
+                <button class="nav-btn" data-section="attendance">
+                    📋 Attendance
+                </button>
+                <button class="nav-btn" data-section="notifications">
+                    🔔 Notifications
+                </button>
+                <button class="nav-btn" data-section="tracking">
+                    📍 Live Bus Tracking
+                </button>
+            </nav>
+
+            <button id="logoutBtn" class="logout-btn">↪ Logout</button>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p>College Transport Management System</p>
+                </div>
+                <div class="topbar-right">
+                    <span id="todayDate"></span>
+                    <span class="status-badge">● System Online</span>
+                </div>
+            </header>
+
+            <!-- Dashboard -->
+            <section id="dashboardSection" class="content-section">
+                <div class="welcome-banner">
+                    <div>
+                        <h2>Welcome to CampusRide! 👋</h2>
+                        <p>Manage college transportation from one place.</p>
+                    </div>
+                    <div class="banner-icon">🚌</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">🚌</div>
+                        <div><p>Total Buses</p><h2 id="totalBuses">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">🎓</div>
+                        <div><p>Registered Students</p><h2 id="totalStudents">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">👨‍✈️</div>
+                        <div><p>Drivers</p><h2 id="totalDrivers">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">🛣️</div>
+                        <div><p>Routes</p><h2 id="totalRoutes">0</h2></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h3>🚌 Bus Information</h3>
+                            <button class="small-btn" onclick="showSection('buses')">View All</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr><th>Bus No.</th><th>Route</th><th>Status</th></tr>
+                                </thead>
+                                <tbody id="dashboardBusTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-heading"><h3>📢 Recent Notifications</h3></div>
+                        <div id="dashboardNotifications" class="notification-list"></div>
+                    </div>
+                </div>
+
+                <div class="panel quick-panel">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="showSection('buses')">➕ Manage Buses</button>
+                        <button class="quick-btn" onclick="showSection('students')">🎓 View Students</button>
+                        <button class="quick-btn" onclick="showSection('attendance')">📋 Mark Attendance</button>
+                        <button class="quick-btn" onclick="showSection('notifications')">🔔 Send Notification</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bus Management -->
+            <section id="busesSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div><h3>Bus Management</h3><p>Manage college vehicles</p></div>
+                        <button class="primary-btn inline-btn admin-only" onclick="openModal('busModal')">+ Add Bus</button>
+                    </div>
+
+                    <input type="search" id="busSearch" class="search-input" placeholder="Search bus number or route...">
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bus Number</th><th>Route</th>
+                                    <th>Driver</th><th>Capacity</th><th>Status</th><th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="busTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Route Management -->
+            <section id="routesSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div><h3>Route Management</h3><p>College bus routes and timings</p></div>
+                        <button class="primary-btn inline-btn admin-only" onclick="openModal('routeModal')">+ Add Route</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Route ID</th><th>Route Name</th><th>Pickup Point</th><th>Departure</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="routeTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students -->
+            <section id="studentsSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div><h3>Student Management</h3><p>Registered transport users</p></div>
+                        <button class="primary-btn inline-btn admin-only" onclick="openModal('studentModal')">+ Add Student</button>
+                    </div>
+
+                    <input type="search" id="studentSearch" class="search-input" placeholder="Search students...">
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Student ID</th><th>Name</th><th>Email</th><th>Route</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="studentTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Drivers -->
+            <section id="driversSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div><h3>Driver Management</h3><p>College transport drivers</p></div>
+                        <button class="primary-btn inline-btn admin-only" onclick="openModal('driverModal')">+ Add Driver</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Driver ID</th><th>Name</th><th>Phone</th><th>Assigned Bus</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="driverTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attendance -->
+            <section id="attendanceSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div><h3>Transport Attendance</h3><p>Record student boarding</p></div>
+                        <span id="attendanceDate" class="status-badge"></span>
+                    </div>
+
+                    <form id="attendanceForm" class="inline-form">
+                        <select id="attendanceStudent" required="">
+                            <option value="">Select student</option>
+                        </select>
+                        <select id="attendanceBus" required="">
+                            <option value="">Select bus</option>
+                        </select>
+                        <select id="attendanceStatus" required="">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                        <button class="primary-btn inline-btn" type="submit">Save Attendance</button>
+                    </form>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Date</th><th>Student</th><th>Bus</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="attendanceTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications -->
+            <section id="notificationsSection" class="content-section hidden">
+                <div class="panel admin-only">
+                    <h3>Send Transport Notification</h3>
+                    <form id="notificationForm" class="notification-form">
+                        <label for="notificationTitle">Notification Title</label>
+                        <input type="text" id="notificationTitle" placeholder="e.g. Bus delay update" required="">
+
+                        <label for="notificationText">Message</label>
+                        <textarea id="notificationText" rows="4" placeholder="Enter transport update..." required=""></textarea>
+
+                        <button type="submit" class="primary-btn">Publish Notification</button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <h3>All Notifications</h3>
+                    <div id="allNotifications" class="notification-list"></div>
+                </div>
+            </section>
+
+            <!-- Live Bus Tracking -->
+            <section id="trackingSection" class="content-section hidden">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>📍 Live Bus Location Tracking</h3>
+                            <p>View the live location of the device running this page.</p>
+                        </div>
+                        <span id="trackingStatus" class="status-badge">Tracking stopped</span>
+                    </div>
+
+                    <label for="trackingBus">Select Bus</label>
+                    <select id="trackingBus"><option value="">Select a bus</option><option value="Demo Bus">Demo Bus</option></select>
+
+                    <div class="tracking-buttons">
+                        <button type="button" id="startTracking" class="primary-btn">▶ Start Tracking</button>
+                        <button type="button" id="stopTracking" class="primary-btn">■ Stop Tracking</button>
+                    </div>
+
+                    <div class="location-details">
+                        <p><strong>Latitude:</strong> <span id="latitude">Not available</span></p>
+                        <p><strong>Longitude:</strong> <span id="longitude">Not available</span></p>
+                        <p><strong>Accuracy:</strong> <span id="accuracy">Not available</span></p>
+                        <p><strong>Last Updated:</strong> <span id="lastUpdated">Not available</span></p>
+                    </div>
+
+                    <div class="map-container">
+                        <iframe id="busMap" title="Bus location map" src="about:blank" loading="lazy" referrerpolicy="no-referrer"></iframe>
+                    </div>
+
+                    <p class="tracking-note">
+                        Allow location access when your browser asks. This tracks the device running this page,
+                        not a separate bus, unless this page is open on a device inside the bus.
+                    </p>
+                </div>
+            </section>
+
+            <footer>
+                <p>© <span id="footerYear"></span> CampusRide | College Transport Management System</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Add Bus Modal -->
+    <div id="busModal" class="modal hidden">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('busModal')">×</button>
+            <h2>Add New Bus</h2>
+            <form id="busForm">
+                <label>Bus Number</label>
+                <input id="busNumber" placeholder="e.g. BUS-104" required="">
+                <label>Route</label>
+                <select id="busRoute" required="">
+                    <option value="">Select route</option>
+                </select>
+                <label>Driver Name</label>
+                <input id="busDriver" placeholder="Driver name" required="">
+                <label>Capacity</label>
+                <input id="busCapacity" type="number" min="1" max="100" required="">
+                <label>Status</label>
+                <select id="busStatus">
+                    <option>Active</option><option>Maintenance</option><option>Inactive</option>
+                </select>
+                <button class="primary-btn" type="submit">Save Bus</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Route Modal -->
+    <div id="routeModal" class="modal hidden">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('routeModal')">×</button>
+            <h2>Add New Route</h2>
+            <form id="routeForm">
+                <label>Route ID</label>
+                <input id="routeId" placeholder="e.g. R4" required="">
+                <label>Route Name</label>
+                <input id="routeName" placeholder="e.g. Airport Road" required="">
+                <label>Pickup Point</label>
+                <input id="routePickup" placeholder="Main pickup point" required="">
+                <label>Departure Time</label>
+                <input id="routeTime" type="time" required="">
+                <button class="primary-btn" type="submit">Save Route</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="studentModal" class="modal hidden">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('studentModal')">×</button>
+            <h2>Add Student</h2>
+            <form id="studentForm">
+                <label>Student ID</label>
+                <input id="newStudentId" required="">
+                <label>Full Name</label>
+                <input id="newStudentName" required="">
+                <label>Email</label>
+                <input id="newStudentEmail" type="email" required="">
+                <label>Route</label>
+                <select id="newStudentRoute" required=""></select>
+                <button class="primary-btn" type="submit">Save Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div id="driverModal" class="modal hidden">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal('driverModal')">×</button>
+            <h2>Add Driver</h2>
+            <form id="driverForm">
+                <label>Driver ID</label>
+                <input id="newDriverId" required="">
+                <label>Driver Name</label>
+                <input id="newDriverName" required="">
+                <label>Phone Number</label>
+                <input id="newDriverPhone" type="tel" pattern="[0-9+\-\s]{10,16}" required="">
+                <label>Assigned Bus</label>
+                <select id="newDriverBus">
+                    <option value="">Not assigned</option>
+                </select>
+                <button class="primary-btn" type="submit">Save Driver</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+        (() => {
+            let busLocationWatchId = null;
+
+            const byId = (id) => document.getElementById(id);
+            const trackingSection = byId("trackingSection");
+            const trackingBus = byId("trackingBus");
+            const status = byId("trackingStatus");
+            const startButton = byId("startTracking");
+            const stopButton = byId("stopTracking");
+
+            function setTrackingStatus(message) {
+                if (status) status.textContent = message;
+            }
+
+            function refreshTrackingBusOptions() {
+                if (!trackingBus) return;
+                const previous = trackingBus.value;
+                const buses = JSON.parse(localStorage.getItem("campusride_buses") || "[]");
+                // Rebuild options from stored bus records when available.
+                trackingBus.innerHTML = '<option value="">Select a bus</option>';
+                buses.forEach((bus, index) => {
+                    const busName = bus.number || bus.busNumber || bus.busNo || bus.name || `Bus ${index + 1}`;
+                    const option = document.createElement("option");
+                    option.value = busName;
+                    option.textContent = busName;
+                    trackingBus.appendChild(option);
+                });
+                if (previous) trackingBus.value = previous;
+
+                // If the existing app stores buses under another key, provide a usable demo option.
+                if (trackingBus.options.length === 1) {
+                    const option = document.createElement("option");
+                    option.value = "Demo Bus";
+                    option.textContent = "Demo Bus";
+                    trackingBus.appendChild(option);
+                }
+            }
+
+            function showTrackingSection() {
+                document.querySelectorAll(".content-section").forEach(section => {
+                    section.classList.add("hidden");
+                });
+                trackingSection.classList.remove("hidden");
+
+                document.querySelectorAll(".navigation .nav-btn").forEach(button => {
+                    button.classList.toggle("active", button.dataset.section === "tracking");
+                });
+                const title = byId("pageTitle");
+                if (title) title.textContent = "Live Bus Tracking";
+                refreshTrackingBusOptions();
+            }
+
+            // Capture this click before the existing app navigation handler.
+            document.addEventListener("click", (event) => {
+                const button = event.target.closest('.navigation .nav-btn[data-section="tracking"]');
+                if (!button) return;
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+                showTrackingSection();
+            }, true);
+
+            function startTracking() {
+                if (!trackingBus.value) {
+                    setTrackingStatus("Please select a bus first.");
+                    return;
+                }
+                if (!("geolocation" in navigator)) {
+                    setTrackingStatus("Geolocation is not supported by this browser.");
+                    return;
+                }
+                if (busLocationWatchId !== null) {
+                    navigator.geolocation.clearWatch(busLocationWatchId);
+                }
+                setTrackingStatus("Requesting device location…");
+
+                busLocationWatchId = navigator.geolocation.watchPosition((position) => {
+                    const { latitude, longitude, accuracy } = position.coords;
+                    byId("latitude").textContent = latitude.toFixed(6);
+                    byId("longitude").textContent = longitude.toFixed(6);
+                    byId("accuracy").textContent = `${Math.round(accuracy)} metres`;
+                    byId("lastUpdated").textContent = new Date(position.timestamp).toLocaleString();
+                    byId("busMap").src =
+                        `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.01}%2C${latitude - 0.01}%2C${longitude + 0.01}%2C${latitude + 0.01}&layer=mapnik&marker=${latitude}%2C${longitude}`;
+                    setTrackingStatus(`Tracking ${trackingBus.value}`);
+                    const key = "campusride_bus_locations";
+                    const saved = JSON.parse(localStorage.getItem(key) || "{}");
+                    saved[trackingBus.value] = {
+                        latitude, longitude, accuracy,
+                        updatedAt: new Date(position.timestamp).toISOString()
+                    };
+                    localStorage.setItem(key, JSON.stringify(saved));
+                }, (error) => {
+                    const messages = {
+                        1: "Location permission was denied. Allow location access in browser settings.",
+                        2: "Your device location is currently unavailable.",
+                        3: "Location request timed out. Please try again."
+                    };
+                    setTrackingStatus(messages[error.code] || "Unable to get device location.");
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 3000,
+                    timeout: 15000
+                });
+            }
+
+            function stopTracking() {
+                if (busLocationWatchId !== null) {
+                    navigator.geolocation.clearWatch(busLocationWatchId);
+                    busLocationWatchId = null;
+                }
+                setTrackingStatus("Tracking stopped");
+            }
+
+            startButton.addEventListener("click", startTracking);
+            stopButton.addEventListener("click", stopTracking);
+
+            document.addEventListener("DOMContentLoaded", refreshTrackingBusOptions);
+            refreshTrackingBusOptions();
+        })();
+    </script>
+
+</body></html>
